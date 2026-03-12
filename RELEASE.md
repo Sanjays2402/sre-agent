@@ -5,18 +5,18 @@ This document describes the process for creating a new release of `sre-agent`.
 ## Prerequisites
 
 - You have push access to the repository.
-- All features and fixes intended for the release have been merged into `main`.
-- CI is passing on `main`.
+- All features and fixes intended for the release have been merged into `develop`.
+- CI is passing on `develop`.
 
 ## Steps
 
 ### 1. Create a release branch
 
-Branch off `main` using the `release/` prefix:
+Branch off `develop` using the `release/` prefix:
 
 ```bash
-git checkout main
-git pull origin main
+git checkout develop
+git pull origin develop
 git checkout -b release/vX.Y.Z
 ```
 
@@ -33,15 +33,12 @@ Commit the version bump:
 ```bash
 git add pyproject.toml
 git commit -m "Bump version to vX.Y.Z"
-```
-
-### 3. Open a pull request
-
-Push the release branch and open a PR against `main`:
-
-```bash
 git push -u origin release/vX.Y.Z
 ```
+
+### 3. Open a pull request to main
+
+Open a PR from `release/vX.Y.Z` → `main` (not `develop` — the release goes directly to `main`).
 
 Ensure CI passes and get the required approvals.
 
@@ -56,7 +53,11 @@ git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-### 5. Publish to PyPI
+### 5. Merge back into develop
+
+Open a second PR from `release/vX.Y.Z` → `develop` on GitHub so the version bump and any last-minute fixes are not lost. Get it approved and merge.
+
+### 6. Publish to PyPI
 
 Publishing happens automatically via GitHub Actions when a `v*` tag is pushed
 (see `.github/workflows/publish.yml`). The workflow uses
@@ -65,7 +66,7 @@ need to be stored as secrets.
 
 Verify the release is live at https://pypi.org/project/sre-agent/.
 
-### 6. Create a GitHub release
+### 7. Create a GitHub release
 
 Create a release on GitHub from the new tag:
 
@@ -85,7 +86,7 @@ This project follows [Semantic Versioning](https://semver.org/):
 
 ## Hotfixes
 
-For urgent fixes against a release that is already published:
+For urgent fixes against a release that is already published, branch off `main`:
 
 ```bash
 git checkout main
@@ -93,4 +94,4 @@ git pull origin main
 git checkout -b hotfix/vX.Y.Z
 ```
 
-Follow the same process: bump version, open a PR, merge, tag, and create a GitHub release.
+Follow the same process from step 2 onwards: bump version, open a PR to `main`, merge, tag, publish, create a GitHub release, and merge back into `develop`.
