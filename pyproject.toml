@@ -41,3 +41,105 @@ packages = ["src/sre_agent"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    "legacy",
+]
+
+# same as Black
+line-length = 100
+indent-width = 4
+
+target-version = "py312"
+force-exclude = true
+
+[tool.ruff.lint]
+select = [
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "Q",   # flake8-quotes
+    "ISC", # flake8-implicit-str-concat
+    "F",   # pyflakes
+    "D",   # pydocstyle
+    "E",   # pycodestyle error
+    "W",   # pycodestyle warning
+    "N",   # pep8-naming
+    "I",   # isort
+    "PL",  # pylint rules from categories "Convention", "Error", and "Warning"
+    "PLE", # ruff currently implements only a subset of pylint's rules
+    "PLW", # pylint warning
+    "PLR", # pylint refactor
+    "UP",  # pyupgrade
+    "C",   # Complexity (mccabe+) & comprehensions
+]
+ignore = [
+    "UP006",   # See https://github.com/bokeh/bokeh/issues/13143
+    "UP007",   # See https://github.com/bokeh/bokeh/pull/13144
+    "PLC0415", # Allow imports inside functions (useful for optional deps)
+    "PLR2004", # Allow magic values in comparisons (array indices etc.)
+]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+exclude = ["legacy/", "docs/", "tests/", "LICENSE"]
+strict = true
+ignore_missing_imports = true
+
+[tool.typos.files]
+extend-exclude = [
+    ".gitignore",
+    "LICENSE",
+    "legacy",
+    "*.csv"
+]
+ignore-hidden = true
+ignore-dot = true
+
+[tool.typos.default]
+locale = "en-gb"
+extend-ignore-re = [
+    # Ignore lines that end with `# spellchecker:disable-line`
+    "(?Rm)^.*(#|//)\\s*spellchecker:disable-line$",
+    # Ignore lines with HTML `<!-- spellchecker:disable-line -->`
+    "(?Rm)^.*<!--\\s*spellchecker:disable-line\\s*-->.*$",
+    # Ignore the line after `# spellchecker:ignore-next-line`:
+    "(#|//)\\s*spellchecker:ignore-next-line\\n.*",
+    # Ignore blocks between `# spellchecker:off` and `# spellchecker:on`
+    "(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
