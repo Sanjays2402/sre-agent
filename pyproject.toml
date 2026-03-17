@@ -114,7 +114,7 @@ quote-style = "double"
 convention = "google"
 
 [tool.mypy]
-exclude = ["legacy/", "docs/", "tests/", "LICENSE"]
+exclude = ["docs/", "tests/", "LICENSE"]
 strict = true
 ignore_missing_imports = true
 
