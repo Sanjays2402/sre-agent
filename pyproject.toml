@@ -79,6 +79,7 @@ indent-width = 4
 
 target-version = "py312"
 force-exclude = true
+preview = true
 
 [tool.ruff.lint]
 select = [
@@ -96,8 +97,9 @@ select = [
     "PLE", # ruff currently implements only a subset of pylint's rules
     "PLW", # pylint warning
     "PLR", # pylint refactor
-    "UP",  # pyupgrade
-    "C",   # Complexity (mccabe+) & comprehensions
+    "UP",    # pyupgrade
+    "C",     # Complexity (mccabe+) & comprehensions
+    "DOC201", # pydoclint: return value must be documented
 ]
 ignore = [
     "UP006",   # See https://github.com/bokeh/bokeh/issues/13143
@@ -105,6 +107,7 @@ ignore = [
     "PLC0415", # Allow imports inside functions (useful for optional deps)
     "PLR2004", # Allow magic values in comparisons (array indices etc.)
 ]
+explicit-preview-rules = true
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
