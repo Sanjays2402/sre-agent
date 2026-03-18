@@ -117,15 +117,15 @@ When running with the current stack, the flow is:
 
 We built an evaluation suite to test both tool-use behaviour and diagnosis quality. You can find details here:
 
-- [Evaluation overview](src/sre_agent/eval/README.md)
-- [Tool call evaluation](src/sre_agent/eval/tool_call/README.md)
-- [Diagnosis quality evaluation](src/sre_agent/eval/diagnosis_quality/README.md)
+- [Evaluation overview](evals/README.md)
+- [Tool call evaluation](evals/tool_call/README.md)
+- [Diagnosis quality evaluation](evals/diagnosis_quality/README.md)
 
 Run the suites with:
 
 ```bash
-uv run sre-agent-run-tool-call-eval
-uv run sre-agent-run-diagnosis-quality-eval
+uv run python -m evals.tool_call.run
+uv run python -m evals.diagnosis_quality.run
 ```
 
 # 🤔 Why We Built This
