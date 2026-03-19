@@ -66,5 +66,5 @@ Run command:
 
 ```bash
 uv sync --group eval
-uv run sre-agent-run-diagnosis-quality-eval
+uv run python -m evals.diagnosis_quality.run
 ```

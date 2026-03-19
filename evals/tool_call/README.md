@@ -73,7 +73,7 @@ Run command:
 
 ```bash
 uv sync --group eval
-uv run sre-agent-run-tool-call-eval
+uv run python -m evals.tool_call.run
 ```
 
 ## View Results in Opik

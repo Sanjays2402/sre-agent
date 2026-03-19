@@ -128,6 +128,14 @@ uv run python -m evals.tool_call.run
 uv run python -m evals.diagnosis_quality.run
 ```
 
+Assuming you already have Opik up and running. If not, please refer to the README in either of the eval suites for setup instructions. Once ready, run the following to install prerequisites:
+
+```bash
+export GITHUB_PERSONAL_ACCESS_TOKEN="..."
+export ANTHROPIC_API_KEY="..."
+uv sync --group eval
+```
+
 # 🤔 Why We Built This
 
 We wanted to learn practical best practices for running AI agents in production: cost, safety, observability, and evaluation. We are sharing the journey in the open and publishing what we learn as we go.
