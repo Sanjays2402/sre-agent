@@ -28,6 +28,13 @@ services:
       # GitHub MCP (Remote)
       - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
       - GITHUB_MCP_URL=https://api.githubcopilot.com/mcp/
+      - GITHUB_OWNER=${GITHUB_OWNER}
+      - GITHUB_REPO=${GITHUB_REPO}
+      - GITHUB_REF=${GITHUB_REF:-main}
+      # Diagnosis job inputs (required by sre_agent.run)
+      - LOG_GROUP=${LOG_GROUP}
+      - SERVICE_NAME=${SERVICE_NAME}
+      - TIME_RANGE_MINUTES=${TIME_RANGE_MINUTES:-10}
     depends_on:
       slack:
         condition: service_started
