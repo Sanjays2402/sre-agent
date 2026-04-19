@@ -6,6 +6,9 @@ from pathlib import Path
 
 from sre_agent.config.paths import env_path
 
+# Characters that require a value to be quoted when serialised.
+_SHELL_SPECIAL = re.compile(r"[\s\"'\\#]")
+
 
 def load_env_values() -> dict[str, str]:
     """Load env file values and overlay environment variables.
@@ -38,7 +41,7 @@ def read_env_file(path: Path) -> dict[str, str]:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        values[key.strip()] = value.strip().strip("\"'")
+        values[key.strip()] = _unescape_env_value(value.strip())
     return values
 
 
@@ -68,12 +71,85 @@ def write_env_file(path: Path, updates: dict[str, str]) -> None:
 def _escape_env_value(value: str) -> str:
     """Escape a value for env output.
 
+    Wraps the value in double quotes when it contains whitespace, quote
+    characters, a leading ``#``, or backslashes, and escapes embedded double
+    quotes and backslashes so the value survives a round-trip through
+    :func:`read_env_file`.
+
     Args:
         value: Value to escape.
 
     Returns:
         The escaped value.
     """
-    if re.search(r"\s", value):
-        return f'"{value}"'
+    if not _SHELL_SPECIAL.search(value):
+        return value
+    escaped = (
+        value.replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
+    )
+    return f'"{escaped}"'
+
+
+def _unescape_env_value(value: str) -> str:
+    """Reverse of :func:`_escape_env_value`.
+
+    Handles values that were written either by the current escaping scheme
+    or by the legacy scheme that only stripped outer quotes. Returns the
+    value as-is when it is not wrapped in matching quotes, so unquoted
+    values that happen to contain a leading or trailing quote character
+    are preserved.
+
+    Args:
+        value: Raw value read from an env file (already stripped of
+            surrounding whitespace).
+
+    Returns:
+        The decoded value.
+    """
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+        inner = value[1:-1]
+        if value[0] == '"':
+            return _decode_double_quoted(inner)
+        return inner
     return value
+
+
+_ESCAPE_MAP = {
+    '"': '"',
+    "\\": "\\",
+    "n": "\n",
+    "r": "\r",
+    "t": "\t",
+}
+
+
+def _decode_double_quoted(inner: str) -> str:
+    r"""Decode the body of a double-quoted env value in a single pass.
+
+    Recognises ``\\``, ``\"``, ``\n``, ``\r``, and ``\t`` escape sequences.
+    An unknown escape (e.g. ``\z``) is preserved verbatim, matching the
+    behaviour of common ``.env`` parsers.
+
+    Args:
+        inner: The characters between the surrounding double quotes.
+
+    Returns:
+        The decoded string.
+    """
+    out: list[str] = []
+    i = 0
+    length = len(inner)
+    while i < length:
+        ch = inner[i]
+        if ch == "\\" and i + 1 < length:
+            nxt = inner[i + 1]
+            out.append(_ESCAPE_MAP.get(nxt, ch + nxt))
+            i += 2
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
