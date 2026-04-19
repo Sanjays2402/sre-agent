@@ -18,12 +18,33 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger("pydantic_ai").setLevel(logging.INFO)
 
 
+def _parse_time_range_minutes(raw: str) -> int:
+    """Parse and validate a time range minutes value.
+
+    Args:
+        raw: Raw time range value from CLI args or environment.
+
+    Returns:
+        The validated time range in minutes.
+    """
+    try:
+        minutes = int(raw)
+    except ValueError as exc:
+        print("time_range_minutes must be an integer.")
+        raise SystemExit(1) from exc
+
+    if minutes <= 0:
+        print("time_range_minutes must be greater than 0.")
+        raise SystemExit(1)
+    return minutes
+
+
 def _load_request_from_args_or_env() -> tuple[str, str, int]:
     """Load diagnosis inputs from CLI args or environment."""
     if len(sys.argv) >= 3:
         log_group = sys.argv[1]
         service_name = sys.argv[2]
-        time_range_minutes = int(sys.argv[3]) if len(sys.argv) > 3 else 10
+        time_range_minutes = _parse_time_range_minutes(sys.argv[3]) if len(sys.argv) > 3 else 10
         return log_group, service_name, time_range_minutes
 
     log_group = os.getenv("LOG_GROUP", "").strip()
@@ -35,16 +56,7 @@ def _load_request_from_args_or_env() -> tuple[str, str, int]:
         )
         raise SystemExit(1)
 
-    raw_time_range = os.getenv("TIME_RANGE_MINUTES", "10").strip()
-    try:
-        time_range_minutes = int(raw_time_range)
-    except ValueError as exc:
-        print("TIME_RANGE_MINUTES must be an integer.")
-        raise SystemExit(1) from exc
-
-    if time_range_minutes <= 0:
-        print("TIME_RANGE_MINUTES must be greater than 0.")
-        raise SystemExit(1)
+    time_range_minutes = _parse_time_range_minutes(os.getenv("TIME_RANGE_MINUTES", "10").strip())
     return log_group, service_name, time_range_minutes
 
 
